@@ -1,38 +1,58 @@
 require "readline"
+require_relative "tm_config"
 
 module Tm_exec
     def self.status(args)
         if args.length == 0
-            puts("status: all")
+            puts("status: all")  # TODO
         else
             args.each { |arg|
-                puts("status: #{arg}")  # TODO
+                if !Tm_config::programExists(arg)
+                    puts("Program not found: #{arg}")
+                else
+                    puts("status: #{arg}")  # TODO
+                end
             }
         end
     end
 
     def self.start(args)
-        if args.length != 1
-            return puts("start: need 1 argument")
+        if args.length == 0
+            return puts("start: need at least 1 argument")
+        else
+            args.each { |arg|
+                if !Tm_config::programExists(arg)
+                    puts("Program not found: #{arg}")
+                else
+                    puts("start: #{arg}")  # TODO
+                end
+            }
         end
-
-        puts("start: #{args[0]}")  # TODO
     end
 
     def self.stop(args)
         if args.length != 1
-            return puts("stop: need 1 argument")
+            return puts("stop: need at least 1 argument")
+        else
+            args.each { |arg|
+                if !Tm_config::programExists(arg)
+                    puts("Program not found: #{arg}")
+                else
+                    puts("stop: #{arg}")  # TODO
+                end
+            }
         end
-
-        puts("stop: #{args[0]}")  # TODO
     end
 
     def self.restart(args)
         if args.length != 1
-            return puts("restart: need 1 argument")
+            return puts("restart: need at least 1 argument")
+        else
+            args.each { |arg|
+                Tm_exec::start(arg)
+                Tm_exec::stop(arg)
+            }
         end
-
-        puts("restart: #{args[0]}")  # TODO
     end
 
     def self.reload(args)
@@ -40,7 +60,7 @@ module Tm_exec
             return puts("reload: too many arguments")
         end
 
-        puts("reload")  # TODO
+        Tm_config::load()
     end
 end
 
@@ -56,9 +76,9 @@ module Tm_reader
 
     def self.getLine()
         begin
-            cmd = Readline.readline(Tm_readLine::SUPER_PROMPT).strip.split(/\s+/)
+            cmd = Readline.readline(Tm_reader::SUPER_PROMPT).strip.split(/\s+/)
         rescue
-            return puts("nop")
+            return puts("Can't read line.")
         end
 
         if cmd.length == 0
