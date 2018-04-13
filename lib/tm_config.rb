@@ -26,7 +26,7 @@ module Tm_config
         @@data
     end
 
-    def self.programExists(prog_name)
+    def self.isConfigured(prog_name)
         @@data.keys.include?(prog_name)
     end
 

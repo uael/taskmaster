@@ -8,11 +8,7 @@ module Tm_exec
             puts("status: all")  # TODO
         else
             args.each { |arg|
-                if !Tm_config::programExists(arg)
-                    puts("Program not found: #{arg}")
-                else
-                    puts("status: #{arg}")  # TODO
-                end
+                puts("status: #{arg}")  # TODO
             }
         end
     end
@@ -22,11 +18,7 @@ module Tm_exec
             return puts("start: need at least 1 argument")
         else
             args.each { |arg|
-                if !Tm_config::programExists(arg)
-                    puts("Program not found: #{arg}")
-                else
-                    puts("start: #{arg}")  # TODO
-                end
+                puts("start: #{arg}")  # TODO
             }
         end
     end
@@ -36,11 +28,7 @@ module Tm_exec
             return puts("stop: need at least 1 argument")
         else
             args.each { |arg|
-                if !Tm_config::programExists(arg)
-                    puts("Program not found: #{arg}")
-                else
-                    puts("stop: #{arg}")  # TODO
-                end
+                puts("stop: #{arg}")  # TODO
             }
         end
     end
@@ -65,6 +53,7 @@ module Tm_exec
     end
 
     def self.quit(args)
+        puts("kthxbye")
         exit
     end
 end
@@ -82,6 +71,26 @@ module Tm_reader
         "exit" => :quit,
     }
 
+    def self.isValidLine(cmd)
+        if cmd.length == 0
+            return false
+        end
+
+        if !Tm_reader::SUPER_CMD.keys.include?(cmd[0])
+            puts("Command not found: " + cmd[0])
+            return false
+        end
+
+        ret = true
+        cmd[1..-1].each { |arg|
+            if !Tm_config::isConfigured(arg)
+                puts("Program '#{arg}' is not configured")
+                ret = false
+            end
+        }
+        return ret
+    end
+
     def self.getLine()
         begin
             cmd = Readline.readline(Tm_reader::SUPER_PROMPT).strip.split(/\s+/)
@@ -89,11 +98,7 @@ module Tm_reader
             Tm_exec::quit(nil)
         end
 
-        if cmd.length == 0
-            nil
-        elsif !Tm_reader::SUPER_CMD.keys.include?(cmd[0])
-            puts("Command not found: " + cmd[0])
-        else
+        if Tm_reader::isValidLine(cmd)
             Tm_exec::method(Tm_reader::SUPER_CMD[cmd[0]]).call(cmd[1..-1])
         end
     end
