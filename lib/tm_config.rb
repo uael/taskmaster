@@ -1,7 +1,8 @@
 require "yaml"
 
+
 module Tm_config
-    RC_FILE = ENV["HOME"] + "/.tmrc"
+    RC_FILE = ENV["HOME"] + "/.tmrc.yml"
     MAIN_KEY = "programs"
     DEFAULT_CONFIG = {
         "cmd" => "/bin/command-not-found",
@@ -29,20 +30,32 @@ module Tm_config
         @@data.keys.include?(prog_name)
     end
 
+    def self.create()
+        if not File.exist?(Tm_config::RC_FILE)
+            open(Tm_config::RC_FILE, "w") { |f|
+                f.puts(YAML.dump({Tm_config::MAIN_KEY => {"editme" => Tm_config::DEFAULT_CONFIG}}))
+            }
+            puts(
+                "A default config has been generated in '#{Tm_config::RC_FILE}'.",
+                "You *might* want to edit it."
+            )
+        end
+    end
+
     def self.load()
         begin
+            Tm_config::create()
             data = YAML.load_file(Tm_config::RC_FILE)
         rescue
-            return puts("Can't load config file.")
+            abort("Can't load config file. (#{Tm_config::RC_FILE})")
         end
 
-        if !data.keys.include?(Tm_config::MAIN_KEY)
-            nil
-        else
+        if data.keys.include?(Tm_config::MAIN_KEY)
             data = data[Tm_config::MAIN_KEY]
             data.keys.each { |k|
                 data[k] = DEFAULT_CONFIG.merge(data[k])
             }
+            # TODO: sanitize data from config file
             @@data = data
         end
     end

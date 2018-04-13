@@ -1,5 +1,6 @@
 require "readline"
-require_relative "tm_config"
+require "tm_config"
+
 
 module Tm_exec
     def self.status(args)
@@ -62,7 +63,12 @@ module Tm_exec
 
         Tm_config::load()
     end
+
+    def self.quit(args)
+        exit
+    end
 end
+
 
 module Tm_reader
     SUPER_PROMPT = "TM3000> "
@@ -72,13 +78,15 @@ module Tm_reader
         "stop" => :stop,
         "restart" => :restart,
         "reload" => :reload,
+        "quit" => :quit,
+        "exit" => :quit,
     }
 
     def self.getLine()
         begin
             cmd = Readline.readline(Tm_reader::SUPER_PROMPT).strip.split(/\s+/)
         rescue
-            return puts("Can't read line.")
+            Tm_exec::quit(nil)
         end
 
         if cmd.length == 0
