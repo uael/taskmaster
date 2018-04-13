@@ -1,5 +1,7 @@
 require "taskmaster/version"
 
 module Taskmaster
-  # Your code goes here...
+    def self.main()
+        puts 42
+    end
 end
