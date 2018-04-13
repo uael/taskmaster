@@ -4,19 +4,11 @@ Yet another job control daemon.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'taskmaster'
-```
-
-And then execute:
-
-    $ bundle
+    $ ./bin/setup
 
 ## Usage
 
-    $ taskmaster
+    $ ./exe/taskmaster
 
 ## Development
 
