@@ -1,8 +1,9 @@
 require "readline"
 require "tm_config"
+require "tm_register"
 
 
-module Tm_exec
+module Tm_eval
     def self.status(args)
         if args.length == 0
             puts("status: all")  # TODO
@@ -38,8 +39,8 @@ module Tm_exec
             return puts("restart: need at least 1 argument")
         else
             args.each { |arg|
-                Tm_exec::start(arg)
-                Tm_exec::stop(arg)
+                Tm_eval::start(arg)
+                Tm_eval::stop(arg)
             }
         end
     end
@@ -93,13 +94,17 @@ module Tm_reader
 
     def self.getLine()
         begin
-            cmd = Readline.readline(Tm_reader::SUPER_PROMPT).strip.split(/\s+/)
+            line = Readline.readline(Tm_reader::SUPER_PROMPT)
+            cmd = line.strip.split(/\s+/)
         rescue
-            Tm_exec::quit(nil)
+            Tm_register::log("quit")
+            Tm_eval::quit(nil)
         end
 
         if Tm_reader::isValidLine(cmd)
-            Tm_exec::method(Tm_reader::SUPER_CMD[cmd[0]]).call(cmd[1..-1])
+            Tm_register::log(line)
+            # Tm_register::method(Tm_reader::SUPER_CMD[cmd[0]]).call(line)
+            Tm_eval::method(Tm_reader::SUPER_CMD[cmd[0]]).call(cmd[1..-1])
         end
     end
 end
