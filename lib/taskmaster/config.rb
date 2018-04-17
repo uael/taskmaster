@@ -1,5 +1,7 @@
 require 'yaml'
 
+require_relative 'console'
+
 module Taskmaster
   # noinspection ALL
   module Config
@@ -38,7 +40,7 @@ module Taskmaster
           f.puts(YAML.dump(MAIN_KEY =>
             { editme: DEFAULT_CONFIG }))
         end
-        puts(
+        Console.notice(
           "A default config has been generated in '#{RC_FILE}'.",
           'You *might* want to edit it.'
         )
