@@ -15,8 +15,14 @@ module Taskmaster
     SUPER_PROMPT = "#{Console::Color::BOLD}TM3000> #{Console::Color::CLEAR}"
 
     def self.getline()
+      stty_save = `stty -g`.chomp
+      trap('INT', 'SIG_IGN')
+
       begin
-        cmd = Readline.readline(SUPER_PROMPT).strip.split(/\s+/)
+        cmd = Readline.readline(SUPER_PROMPT, true).strip.split(/\s+/)
+      rescue Interrupt
+        system('stty', stty_save) # Restore
+        Taskmaster::quit(nil)
       rescue
         Taskmaster::quit(nil)
       end
