@@ -1,14 +1,13 @@
 require_relative 'proc'
 
 module Taskmaster
-
   def self.start(args)
-    if args.length == 0
-      return Console::warn('start: need at least 1 argument')
+    if args.empty?
+      Console.warn('start: need at least 1 argument')
     else
-      args.each {|arg|
-        Console::notice("start: #{arg}") # TODO
-      }
+      args.each do |arg|
+        Console.notice("start: #{arg}") # TODO
+      end
     end
   end
 end

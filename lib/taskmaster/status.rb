@@ -1,14 +1,13 @@
 require_relative 'proc'
 
 module Taskmaster
-
   def self.status(args)
-    if args.length == 0
-      Console::notice("status: all") # TODO
+    if args.empty?
+      Console.notice('status: all') # TODO
     else
-      args.each {|arg|
-        Console::notice("status: #{arg}") # TODO
-      }
+      args.each do |arg|
+        Console.notice("status: #{arg}") # TODO
+      end
     end
   end
 end

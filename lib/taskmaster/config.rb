@@ -1,31 +1,30 @@
 require 'yaml'
 
 module Taskmaster
-
+  # noinspection ALL
   module Config
-
     RC_FILE = ENV['HOME'] + '/.tmrc.yml'
-    MAIN_KEY = 'programs'
+    MAIN_KEY = 'programs'.freeze
     DEFAULT_CONFIG = {
-      :cmd => '/bin/command-not-found',
-      :numprocs => 1,
-      :autostart => true,
-      :autorestart => 'unexpected', # always/never/unexpected
-      :exitcodes => [0],
-      :starttime => 5,
-      :startretries => 3,
-      :stopsignal => 'TERM',
-      :stoptime => 10,
-      :stdout => '/dev/stdout',
-      :stderr => '/dev/stderr',
-      :env => {},
-      :workingdir => '/tmp',
-      :umask => 022,
-    }
+      cmd: '/bin/command-not-found',
+      numprocs: 1,
+      autostart: true,
+      autorestart: 'unexpected', # always/never/unexpected
+      exitcodes: [0],
+      starttime: 5,
+      startretries: 3,
+      stopsignal: 'TERM',
+      stoptime: 10,
+      stdout: '/dev/stdout',
+      stderr: '/dev/stderr',
+      env: {},
+      workingdir: '/tmp',
+      umask: 0o22
+    }.freeze
     @@config = {}
     @@procs = {}
 
-    def self.getdata()
+    def self.getdata
       @@config
     end
 
@@ -33,13 +32,12 @@ module Taskmaster
       @@config.keys.include?(prog_name)
     end
 
-    def self.create()
+    def self.create
       unless File.exist?(RC_FILE)
-        open(RC_FILE, 'w') {|f|
-          f.puts(YAML.dump({MAIN_KEY =>
-            {:editme => DEFAULT_CONFIG}
-          }))
-        }
+        open(RC_FILE, 'w') do |f|
+          f.puts(YAML.dump(MAIN_KEY =>
+            { editme: DEFAULT_CONFIG }))
+        end
         puts(
           "A default config has been generated in '#{RC_FILE}'.",
           'You *might* want to edit it.'
@@ -47,19 +45,19 @@ module Taskmaster
       end
     end
 
-    def self.load()
+    def self.load
       begin
         create
         data = YAML.load_file(RC_FILE)
-      rescue
+      rescue StandardError
         abort("Can't load config file. (#{RC_FILE})")
       end
 
       if data.keys.include?(MAIN_KEY)
         data = data[MAIN_KEY]
-        data.keys.each {|k|
+        data.keys.each do |k|
           data[k] = DEFAULT_CONFIG.merge(data[k])
-        }
+        end
         # TODO: sanitize data from config file
         @@config = data
       end

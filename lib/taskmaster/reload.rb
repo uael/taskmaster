@@ -1,12 +1,9 @@
 require_relative 'proc'
 
 module Taskmaster
-
   def self.reload(args)
-    if args.length > 0
-      return Console::warn("reload: too many arguments")
-    end
+    return Console.warn('reload: too many arguments') unless args.empty?
 
-    Taskmaster::Config::load()
+    Taskmaster::Config.load
   end
 end

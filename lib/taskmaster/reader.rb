@@ -9,12 +9,10 @@ require_relative 'status'
 require_relative 'stop'
 
 module Taskmaster
-
   module Reader
+    SUPER_PROMPT = "#{Console::Color::BOLD}TM3000> #{Console::Color::CLEAR}".freeze
 
-    SUPER_PROMPT = "#{Console::Color::BOLD}TM3000> #{Console::Color::CLEAR}"
-
-    def self.getline()
+    def self.getline
       stty_save = `stty -g`.chomp
       trap('INT', 'SIG_IGN')
 
@@ -22,18 +20,18 @@ module Taskmaster
         cmd = Readline.readline(SUPER_PROMPT, true).strip.split(/\s+/)
       rescue Interrupt
         system('stty', stty_save) # Restore
-        Taskmaster::quit(nil)
-      rescue
-        Taskmaster::quit(nil)
+        Taskmaster.quit(nil)
+      rescue StandardError
+        Taskmaster.quit(nil)
       end
 
-      if cmd.length == 0
+      if cmd.empty?
         nil
       else
         begin
           Taskmaster.method(cmd[0]).call(cmd[1..-1])
-        rescue
-          Console::error "#{cmd[0]}: Command not found"
+        rescue StandardError
+          Console.error "#{cmd[0]}: Command not found"
         end
       end
     end

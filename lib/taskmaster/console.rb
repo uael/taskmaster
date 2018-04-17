@@ -1,46 +1,44 @@
 module Taskmaster
-
   module Console
-
     module Color
       # Embed in a String to clear all previous ANSI sequences.
-      CLEAR = "\e[0m"
+      CLEAR = "\e[0m".freeze
       # The start of an ANSI bold sequence.
-      BOLD = "\e[1m"
+      BOLD = "\e[1m".freeze
 
       # Set the terminal's foreground ANSI color to black.
-      BLACK = "\e[30m"
+      BLACK = "\e[30m".freeze
       # Set the terminal's foreground ANSI color to red.
-      RED = "\e[31m"
+      RED = "\e[31m".freeze
       # Set the terminal's foreground ANSI color to green.
-      GREEN = "\e[32m"
+      GREEN = "\e[32m".freeze
       # Set the terminal's foreground ANSI color to yellow.
-      YELLOW = "\e[33m"
+      YELLOW = "\e[33m".freeze
       # Set the terminal's foreground ANSI color to blue.
-      BLUE = "\e[34m"
+      BLUE = "\e[34m".freeze
       # Set the terminal's foreground ANSI color to magenta.
-      MAGENTA = "\e[35m"
+      MAGENTA = "\e[35m".freeze
       # Set the terminal's foreground ANSI color to cyan.
-      CYAN = "\e[36m"
+      CYAN = "\e[36m".freeze
       # Set the terminal's foreground ANSI color to white.
-      WHITE = "\e[37m"
+      WHITE = "\e[37m".freeze
 
       # Set the terminal's background ANSI color to black.
-      ON_BLACK = "\e[40m"
+      ON_BLACK = "\e[40m".freeze
       # Set the terminal's background ANSI color to red.
-      ON_RED = "\e[41m"
+      ON_RED = "\e[41m".freeze
       # Set the terminal's background ANSI color to green.
-      ON_GREEN = "\e[42m"
+      ON_GREEN = "\e[42m".freeze
       # Set the terminal's background ANSI color to yellow.
-      ON_YELLOW = "\e[43m"
+      ON_YELLOW = "\e[43m".freeze
       # Set the terminal's background ANSI color to blue.
-      ON_BLUE = "\e[44m"
+      ON_BLUE = "\e[44m".freeze
       # Set the terminal's background ANSI color to magenta.
-      ON_MAGENTA = "\e[45m"
+      ON_MAGENTA = "\e[45m".freeze
       # Set the terminal's background ANSI color to cyan.
-      ON_CYAN = "\e[46m"
+      ON_CYAN = "\e[46m".freeze
       # Set the terminal's background ANSI color to white.
-      ON_WHITE = "\e[47m"
+      ON_WHITE = "\e[47m".freeze
     end
 
     def self.error(error)
@@ -58,10 +56,10 @@ module Taskmaster
     def self.which(cmd)
       exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
       ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-        exts.each {|ext|
+        exts.each do |ext|
           exe = File.join(path, "#{cmd}#{ext}")
           return exe if File.executable?(exe) && !File.directory?(exe)
-        }
+        end
       end
       nil
     end
