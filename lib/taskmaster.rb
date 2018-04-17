@@ -1,14 +1,13 @@
-require "taskmaster/version"
-require "tm_config"
-require "tm_reader"
-
+require 'taskmaster/version'
+require 'taskmaster/reader'
+require 'taskmaster/config'
 
 module Taskmaster
-    def self.main()
-        Tm_config::load()
 
-        while true
-            Tm_reader::getLine()
-        end
-    end
+  def self.main()
+    Taskmaster::Config::load()
+    loop {
+      Taskmaster::Reader::getline()
+    }
+  end
 end
