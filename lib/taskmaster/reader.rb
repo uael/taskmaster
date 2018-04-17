@@ -32,9 +32,13 @@ module Taskmaster
       if cmd.empty?
         nil
       else
-        begin
-          Taskmaster.method(cmd[0]).call(cmd[1..-1])
-        rescue StandardError
+        if Taskmaster.respond_to? cmd[0]
+          begin
+            Taskmaster.method(cmd[0]).call(cmd[1..-1])
+          rescue Exception => ex
+            Console.error("#{cmd[0]}: #{ex.message}")
+          end
+        else
           Console.error "#{cmd[0]}: Command not found"
         end
       end

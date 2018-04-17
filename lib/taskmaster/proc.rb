@@ -5,6 +5,8 @@ module Taskmaster
   class Proc
     # noinspection RubyTooManyInstanceVariablesInspection
     class Conf
+      attr_accessor :cmd
+
       @cmd = 'true'
       @count = 1
       @autostart = true
@@ -19,9 +21,9 @@ module Taskmaster
       @workingdir = '/tmp'
       @umask = 0o22
 
-      def self.cmd(cmd)
+      def setcmd(cmd)
         unless (@cmd = Taskmaster::Console.which(cmd))
-          raise ArgumentError, 'Command not found'
+          raise ArgumentError, "#{cmd}: Command not found"
         end
         @cmd
       end
@@ -30,8 +32,8 @@ module Taskmaster
     @conf = Conf.new
     @threads = []
 
-    def self.initialize(conf)
-      Config.cmd(conf["cmd"])
+    def self.new(conf)
+      @conf.setcmd conf[:cmd]
     end
 
     def self.spawn
@@ -39,7 +41,7 @@ module Taskmaster
         thread.exit if thread and thread.instance_of? Thread
       end
       (0..@count).step(1) do
-        Console.spawn Config.cmd do |stdout, stderr, thread|
+        Console.spawn @conf.cmd do |stdout, stderr, thread|
           puts "stdout: #{stdout}" # => "simple output"
           puts "stderr: #{stderr}" # => "error: an error happened"
           puts "pid: #{thread.pid}" # => 12345
