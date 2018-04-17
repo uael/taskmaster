@@ -20,14 +20,15 @@ module Tm_config
         "workingdir" => "/tmp",
         "umask" => 022,
     }
-    @@data = {}
+    @@config = {}
+    @@procs = {}
 
     def self.getData()
-        @@data
+        @@config
     end
 
     def self.isConfigured(prog_name)
-        @@data.keys.include?(prog_name)
+        @@config.keys.include?(prog_name)
     end
 
     def self.create()
@@ -56,7 +57,7 @@ module Tm_config
                 data[k] = DEFAULT_CONFIG.merge(data[k])
             }
             # TODO: sanitize data from config file
-            @@data = data
+            @@config = data
         end
     end
 end

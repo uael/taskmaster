@@ -1,6 +1,6 @@
 require "readline"
 require "tm_config"
-require "exec"
+
 
 module Tm_exec
     def self.status(args)
