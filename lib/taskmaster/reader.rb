@@ -11,10 +11,14 @@ require_relative 'stop'
 module Taskmaster
   module Reader
     SUPER_PROMPT = "#{Console::Color::BOLD}TM3000> #{Console::Color::CLEAR}".freeze
+    CMDS = %w(quit reload restart start status stop).sort.freeze
 
     def self.getline
       stty_save = `stty -g`.chomp
       trap('INT', 'SIG_IGN')
+
+      Readline.completion_append_character = " "
+      Readline.completion_proc = proc { |s| CMDS.grep(/^#{Regexp.escape(s)}/) }
 
       begin
         cmd = Readline.readline(SUPER_PROMPT, true).strip.split(/\s+/)
