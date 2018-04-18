@@ -2,11 +2,13 @@ require 'open3'
 
 module Taskmaster
 
+  # TODO: do we need a class?
   class Proc
-    # noinspection RubyTooManyInstanceVariablesInspection
+    # TODO: if the answer was yes, do we really need *nested* classes???
     class Conf
       attr_accessor :cmd
 
+      # TODO: this is redundant
       @cmd = 'true'
       @count = 1
       @autostart = true

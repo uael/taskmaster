@@ -23,22 +23,21 @@ module Taskmaster
       workingdir: '/tmp',
       umask: 0o22
     }.freeze
-    @@config = {}
-    @@procs = {}
+    @@data = {}
+    @@procs = {}  # TODO: that's not config
 
     def self.getdata
-      @@config
+      @@data
     end
 
-    def self.isconfigured(prog_name)
-      @@config.keys.include?(prog_name)
+    def self.isConfigured(prog_name)
+      @@data.keys.include?(prog_name)
     end
 
     def self.create
       unless File.exist?(RC_FILE)
         open(RC_FILE, 'w') do |f|
-          f.puts(YAML.dump(MAIN_KEY =>
-            { editme: DEFAULT_CONFIG }))
+          f.puts(YAML.dump(MAIN_KEY => { editme: DEFAULT_CONFIG }))
         end
         Console.notice(
           "A default config has been generated in '#{RC_FILE}'.",
@@ -61,7 +60,7 @@ module Taskmaster
           data[k] = DEFAULT_CONFIG.merge(data[k])
         end
         # TODO: sanitize data from config file
-        @@config = data
+        @@data = data
       end
     end
   end
