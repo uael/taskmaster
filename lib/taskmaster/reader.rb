@@ -8,7 +8,7 @@ require_relative 'eval'
 module Taskmaster
 
     module Reader
-        SUPER_PROMPT = "#{Console::Color::BOLD}TM3000> #{Console::Color::CLEAR}".freeze
+        SUPER_PROMPT = "TM3000> ".white.freeze
         SUPER_CMD = {
             "status" => :status,
             "start" => :start,
