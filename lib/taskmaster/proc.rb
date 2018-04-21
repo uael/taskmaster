@@ -1,55 +1,40 @@
-require 'open3'
-
 module Taskmaster
+    module Proc
+        @@pids = {} # "ls" => {[pid], etc}
 
-  # TODO: do we need a class?
-  class Proc
-    # TODO: if the answer was yes, do we really need *nested* classes???
-    class Conf
-      attr_accessor :cmd
-
-      # TODO: this is redundant
-      @cmd = 'true'
-      @count = 1
-      @autostart = true
-      @autorestart = 'unexpected'
-      @exitcodes = [0]
-      @startretries = 3
-      @stopsignal = 'TERM'
-      @stoptime = 10
-      @stdout = '/dev/stdout'
-      @stderr = '/dev/stderr'
-      @env = {}
-      @workingdir = '/tmp'
-      @umask = 0o22
-
-      def setcmd(cmd)
-        unless (@cmd = Taskmaster::Console.which(cmd))
-          raise ArgumentError, "#{cmd}: Command not found"
+        def self.which(cmd)
+            exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+            ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+                exts.each do |ext|
+                    exe = File.join(path, "#{cmd}#{ext}")
+                    return exe if File.executable?(exe) && !File.directory?(exe)
+                end
+            end
+            nil
         end
-        @cmd
-      end
-    end
 
-    @conf = Conf.new
-    @threads = []
+        def self.launch(name)
+            config = Config::getData()[name]
+            begin
+                if not @@pids.keys.include?(name)
+                    @@pids[name] = []
+                end
 
-    def self.new(conf)
-      @conf.setcmd conf[:cmd]
-    end
-
-    def self.spawn
-      @threads.each do |thread|
-        thread.exit if thread and thread.instance_of? Thread
-      end
-      (0..@count).step(1) do
-        Console.spawn @conf.cmd do |stdout, stderr, thread|
-          puts "stdout: #{stdout}" # => "simple output"
-          puts "stderr: #{stderr}" # => "error: an error happened"
-          puts "pid: #{thread.pid}" # => 12345
-          @threads.push thread
+                @@pids[name].push(
+                    spawn(
+                        config["env"],
+                        config["cmd"],
+                        {
+                            :out => config["stdout"],
+                            :err => config["stderr"],
+                            :chdir => config["workingdir"],
+                            :umask => config["umask"],
+                        }
+                    )
+                )
+            rescue Exception => e
+                Console.error(e.message)
+            end
         end
-      end
     end
-  end
 end

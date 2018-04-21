@@ -4,6 +4,7 @@ require_relative 'console'
 require_relative 'history'
 require_relative 'config'
 require_relative 'register'
+require_relative 'proc'
 
 module Taskmaster
 
@@ -25,12 +26,7 @@ module Taskmaster
 
             args.each { |arg|
                 # TODO: move the start logic somewhere else (proc?)
-                begin
-                    p = Proc.new(Config::getdata()[arg])
-                    p.spawn()
-                rescue Exception => ex
-                    Console.error("#{arg}: #{ex.message}")  # TODO
-                end
+                Proc.launch(arg)
             }
         end
 
