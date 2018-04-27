@@ -11,12 +11,12 @@ module Taskmaster
     module Eval
         def self.status(args)
             if args.length == 0
-                Console.notice("status: all")  # TODO
-            else
-                args.each { |arg|
-                    Console.notice("status: #{arg}")  # TODO
-                }
+                args = Config.getData().keys
             end
+
+            args.each { |arg|
+                Proc.status(arg)
+            }
         end
 
         def self.start(args)
@@ -25,29 +25,28 @@ module Taskmaster
             end
 
             args.each { |arg|
-                # TODO: move the start logic somewhere else (proc?)
                 Proc.launch(arg)
             }
         end
 
         def self.stop(args)
-            if args.length != 1
+            if args.length == 0
                 return Console.warn("stop: need at least 1 argument")
             end
 
             args.each { |arg|
-                Console.notice("stop: #{arg}")  # TODO
+                Proc.kill(arg)
             }
         end
 
         def self.restart(args)
-            if args.length != 1
+            if args.length == 0
                 return Console.warn("restart: need at least 1 argument")
             end
 
             args.each { |arg|
-                Eval::start(arg)
-                Eval::stop(arg)
+                Eval::start([arg])
+                Eval::stop([arg])
             }
         end
 
@@ -60,8 +59,7 @@ module Taskmaster
         end
 
         def self.quit(args)
-            # TODO: store the filename to a const
-            History.save(ENV['HOME'] + '/.tmst')
+            History.save()
             Register::log("quit")
             puts("kthxbye")
             exit

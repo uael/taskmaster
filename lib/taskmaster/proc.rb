@@ -13,7 +13,10 @@ module Taskmaster
             nil
         end
 
+        # TODO: loop the whole function config["startretries"] times till it succeeds
         def self.launch(name)
+            # TODO: time_of_launch = time.now
+
             config = Config::getData()[name]
             begin
                 if not @@pids.keys.include?(name)
@@ -35,6 +38,24 @@ module Taskmaster
             rescue Exception => e
                 Console.error(e.message)
             end
+
+            # TODO: launch n instances
+            # TODO: check return code -> restart if needed: config["autorestart"]
+            # TODO: in wait callback? -> "abort" (just log an error?) if time.now - time_of_launch > config["starttime"]
+        end
+
+        def self.kill(name)
+            # TODO: check if the proc is actually running
+
+            # TODO: time_of_death = time.now
+            # TODO: send config["stopsignal"] to the proc
+            puts "#{name}: aaaarg"
+            # TODO: in wait callback? -> SIGKILL if time.now - time_of_death > config["stoptime"]
+        end
+
+        def self.status(name)
+            # TODO: display some infos about the proc here -> at least if it's running or not
+            puts "#{name}: I'm ok thank you"
         end
     end
 end

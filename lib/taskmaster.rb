@@ -6,11 +6,15 @@ require 'taskmaster/register'
 
 module Taskmaster
     def self.main
-        # TODO: store the filename to a const
-        # TODO: move the save/load logic to read or config module
-        History.load(ENV['HOME'] + '/.tmst')
+        History.load()
         Config.load()
         Register.log("launch")
+
+        # TODO: launch all proc with autostart=true
+
+        # TODO: catch sighup -> reload conf
+        #                    -> kill all proc?
+        #                    -> restart proc?
 
         while true
             Reader.getline()
