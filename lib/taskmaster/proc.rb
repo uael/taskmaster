@@ -39,7 +39,7 @@ module Taskmaster
                 Console.error(e.message)
             end
 
-            # TODO: launch n instances
+            # TODO: launch config["numprocs"] instances
             # TODO: check return code -> restart if needed: config["autorestart"]
             # TODO: in wait callback? -> "abort" (just log an error?) if time.now - time_of_launch > config["starttime"]
         end
