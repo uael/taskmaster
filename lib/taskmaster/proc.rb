@@ -3,6 +3,9 @@ module Taskmaster
         @@pids = {} # "ls" => {[pid], etc}
 
         def self.which(cmd)
+            if File.executable?(cmd)
+                return cmd
+            end
             exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
             ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
                 exts.each do |ext|

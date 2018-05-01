@@ -1,6 +1,7 @@
 require 'yaml'
 
 require_relative 'console'
+require_relative 'proc'
 
 module Taskmaster
     module Config
@@ -20,8 +21,17 @@ module Taskmaster
             "stderr" => '/dev/stderr',
             "env" => {},
             "workingdir" => '/tmp',
-            "umask" => 0o22
+            "umask" => 0o22,
+            "procs" => []
         }
+
+        PROC = {
+            "pid" => 0,
+            "starttime" => 0,
+            "stoptime" => 0,
+            "exitcode" => 0,
+        }
+
         SIGNALS = {
             "HUP" => 1,
             "INT" => 2,
@@ -83,9 +93,12 @@ module Taskmaster
                 abort("Invalid config file. (#{Config::RC_FILE})")
             end
 
-            if not File.executable?(conf["cmd"])
+            cmd = conf["cmd"].split(/\s+/)[0]
+            zboub = Proc.which(cmd)
+            if zboub.nil?
                 abort("Invalid config file: '#{conf["cmd"]}' not found (#{Config::RC_FILE})")
             end
+            conf["cmd"].sub(cmd, zboub)
 
             if not conf["numprocs"].is_a?(Integer) or conf["numprocs"] < 0
                 abort("Invalid config file: invalid numprocs '#{conf["numprocs"]}' (#{Config::RC_FILE})")
@@ -165,12 +178,12 @@ module Taskmaster
 
             data = data[Config::MAIN_KEY]
             data.keys.each { |k|
-                begin
+                # begin
                     data[k] = Config::DEFAULT_CONFIG.merge(data[k])
                     validate(data[k])
-                rescue
-                    abort("Invalid config file. (#{Config::RC_FILE})")
-                end
+                # rescue
+                    # abort("Invalid config file. (#{Config::RC_FILE})")
+                # end
             }
             @@data = data
         end
