@@ -1,3 +1,5 @@
+require "time"
+
 module Taskmaster
     module Proc
         @@pids = {} # "ls" => {[pid], etc}
@@ -18,25 +20,24 @@ module Taskmaster
 
         # TODO: loop the whole function config["startretries"] times till it succeeds
         def self.launch(name)
-            # TODO: time_of_launch = time.now
-
             config = Config::getData()[name]
             begin
-                if not @@pids.keys.include?(name)
-                    @@pids[name] = []
-                end
-
-                @@pids[name].push(
-                    spawn(
-                        config["env"],
-                        config["cmd"],
-                        {
-                            :out => config["stdout"],
-                            :err => config["stderr"],
-                            :chdir => config["workingdir"],
-                            :umask => config["umask"],
-                        }
-                    )
+                config["procs"].push(
+                    {
+                        "starttime" => Time.now,
+                        "stoptime" => 0,
+                        "exitcode" => nil,
+                        "pid" => spawn(
+                            config["env"],
+                            config["cmd"],
+                            {
+                                :out => config["stdout"],
+                                :err => config["stderr"],
+                                :chdir => config["workingdir"],
+                                :umask => config["umask"],
+                            }
+                        )
+                    }
                 )
             rescue Exception => e
                 Console.error(e.message)
