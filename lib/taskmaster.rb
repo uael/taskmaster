@@ -15,13 +15,17 @@ module Taskmaster
         # TODO: catch sighup -> reload conf
         #                    -> kill all proc?
         #                    -> restart proc?
-        Thread.new  {
-            c = Config.getData()
-            c.keys.each { |k|
-                c[k]["procs"].each { |p|
-                    p p
+        Thread.new {
+            loop do
+                c = Config.getData()
+                c.keys.each { |k|
+                    c[k]["procs"].each { |p|
+                        #TODO: waitMyPIDnonBlockingChercheSurInternetDirectFaisPasChier
+                    }
                 }
-            }
+            end
+
+            # TODO: check if procs are still alive and stuffs
         }
 
         while true
