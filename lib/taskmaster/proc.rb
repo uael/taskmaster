@@ -20,41 +20,42 @@ module Taskmaster
 
         # TODO: loop the whole function config["startretries"] times till it succeeds
         def self.launch(name)
-            config = Config::getData()[name]
-            begin
-                config["procs"].push(
-                    {
-                        "starttime" => Time.now,
-                        "stoptime" => 0,
-                        "exitcode" => nil,
-                        "pid" => Process.spawn(
-                            config["env"],
-                            config["cmd"],
-                            {
-                                :out => config["stdout"],
-                                :err => config["stderr"],
-                                :chdir => config["workingdir"],
-                                :umask => config["umask"],
-                            }
-                        )
-                    }
-                )
-            rescue Exception => e
-                Console.error(e.message)
-            end
+            conf = Config::getData()[name]
+            (1..conf["numprocs"]).each {
+                begin
+                    conf["procs"].push(
+                        {
+                            "starttime" => Time.now,
+                            "stoptime" => 0,
+                            "exitcode" => nil,
+                            "pid" => Process.spawn(
+                                conf["env"],
+                                conf["cmd"],
+                                {
+                                    :out => conf["stdout"],
+                                    :err => conf["stderr"],
+                                    :chdir => conf["workingdir"],
+                                    :umask => conf["umask"],
+                                }
+                            )
+                        }
+                    )
+                rescue Exception => e
+                    Console.error(e.message)
+                end
+            }
 
-            # TODO: launch config["numprocs"] instances
-            # TODO: check return code -> restart if needed: config["autorestart"]
-            # TODO: in wait callback? -> "abort" (just log an error?) if time.now - time_of_launch > config["starttime"]
+            # TODO: check return code -> restart if needed: conf["autorestart"]
+            # TODO: in wait callback? -> "abort" (just log an error?) if time.now - time_of_launch > conf["starttime"]
         end
 
         def self.kill(name)
             # TODO: check if the proc is actually running
 
             # TODO: time_of_death = time.now
-            # TODO: send config["stopsignal"] to the proc
+            # TODO: send conf["stopsignal"] to the proc
             puts "#{name}: aaaarg"
-            # TODO: in wait callback? -> SIGKILL if time.now - time_of_death > config["stoptime"]
+            # TODO: in wait callback? -> SIGKILL if time.now - time_of_death > conf["stoptime"]
         end
 
         def self.status(name)
