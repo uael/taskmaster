@@ -26,10 +26,11 @@ module Taskmaster
         }
 
         PROC = {
-            "pid" => 0,
-            "starttime" => 0,
-            "stoptime" => 0,
-            "exitcode" => 0,
+            "pid" => nil,
+            "begintime" => 0,
+            "endtime" => 0,
+            "killtime" => 0,
+            "exitcode" => nil,
         }
 
         SIGNALS = {
@@ -180,6 +181,7 @@ module Taskmaster
             data.keys.each { |k|
                 # begin
                     data[k] = Config::DEFAULT_CONFIG.merge(data[k])
+                    data[k]["procs"] = []  # makes sense
                     validate(data[k])
                 # rescue
                     # abort("Invalid config file. (#{Config::RC_FILE})")

@@ -25,8 +25,9 @@ module Taskmaster
                 begin
                     conf["procs"].push(
                         {
-                            "starttime" => Time.now,
-                            "stoptime" => 0,
+                            "begintime" => Time.now,
+                            "endtime" => 0,
+                            "killtime" => 0,
                             "exitcode" => nil,
                             "pid" => Process.spawn(
                                 conf["env"],
@@ -44,12 +45,10 @@ module Taskmaster
                     Console.error(e.message)
                 end
             }
-
-            # TODO: check return code -> restart if needed: conf["autorestart"]
-            # TODO: in wait callback? -> "abort" (just log an error?) if time.now - time_of_launch > conf["starttime"]
         end
 
-        def self.kill(name)
+        def self.kill(name, force=false)
+            # conf = Config::getData()[name]
             # TODO: check if the proc is actually running
 
             # TODO: time_of_death = time.now
@@ -59,8 +58,24 @@ module Taskmaster
         end
 
         def self.status(name)
-            # TODO: display some infos about the proc here -> at least if it's running or not
-            puts "#{name}: I'm ok thank you"
+            conf = Config::getData()[name]
+            for i in 1..conf["procs"].length
+                if conf["procs"][i - 1]["exitcode"].nil?
+                    puts "#{name} ##{i}: I'm ok thank you"
+                else
+                    puts "dead-#{name} ##{i}: wooooo!"
+                end
+                # TODO: add more infos?
+            end
+        end
+
+        def self.undertaker(name, proc)
+            # TODO: check return code -> restart if needed: conf["autorestart"]
+            conf = Config::getData()[name]
+            if proc["endtime"] - proc["begintime"] < conf["starttime"]
+                Console.warn("#{name} finished before its configured starttime")
+                # TODO: restart?
+            end
         end
     end
 end

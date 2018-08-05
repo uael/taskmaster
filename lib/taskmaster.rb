@@ -1,3 +1,5 @@
+require "time"
+
 require 'taskmaster/version'
 require 'taskmaster/reader'
 require 'taskmaster/config'
@@ -26,20 +28,26 @@ module Taskmaster
                 conf = Config.getData()
                 conf.keys.each { |k|
                     conf[k]["procs"].each { |p|
-                        #TODO: waitMyPIDnonBlockingChercheSurInternetDirectFaisPasChier
+                        if p["exitcode"].nil?
+                            begin
+                                Process.kill(p["pid"], 0)  # is it still alive?
+                            rescue # nop
+                                Process.wait(p["pid"])
+                                p["exitcode"] = $?.exitstatus
+                                p["endtime"] = Time.now
+                                Proc.undertaker(k, p)
+                            end
+                        end
                     }
                 }
                 sleep(0.1)
             end
-
-            # TODO: check if procs are still alive and stuffs
         }
 
         while true
             Reader.getline()
         end
 
-        # TODO: kill all remaining process (aka: zombie slaughter)
-        # Process.detach(pid)
+        # don't write code here
     end
 end

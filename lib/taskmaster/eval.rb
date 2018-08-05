@@ -61,6 +61,8 @@ module Taskmaster
         def self.quit(args)
             History.save()
             Register::log("quit")
+            # TODO: kill all remaining process (aka: zombie slaughter)
+            # Process.detach(pid)
             puts("kthxbye")
             exit
         end
