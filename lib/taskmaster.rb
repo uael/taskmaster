@@ -3,6 +3,7 @@ require 'taskmaster/reader'
 require 'taskmaster/config'
 require 'taskmaster/history'
 require 'taskmaster/register'
+require 'taskmaster/proc'
 
 module Taskmaster
     def self.main
@@ -10,19 +11,25 @@ module Taskmaster
         Config.load()
         Register.log("launch")
 
-        # TODO: launch all proc with autostart=true
+        conf = Config.getData()
+        conf.keys.each { |k|
+            if conf[k]["autostart"]
+                Proc.launch(k)
+            end
+        }
 
         # TODO: catch sighup -> reload conf
         #                    -> kill all proc?
         #                    -> restart proc?
         Thread.new {
             loop do
-                c = Config.getData()
-                c.keys.each { |k|
-                    c[k]["procs"].each { |p|
+                conf = Config.getData()
+                conf.keys.each { |k|
+                    conf[k]["procs"].each { |p|
                         #TODO: waitMyPIDnonBlockingChercheSurInternetDirectFaisPasChier
                     }
                 }
+                sleep(0.1)
             end
 
             # TODO: check if procs are still alive and stuffs
@@ -31,5 +38,8 @@ module Taskmaster
         while true
             Reader.getline()
         end
+
+        # TODO: kill all remaining process (aka: zombie slaughter)
+        # Process.detach(pid)
     end
 end

@@ -27,7 +27,7 @@ module Taskmaster
                         "starttime" => Time.now,
                         "stoptime" => 0,
                         "exitcode" => nil,
-                        "pid" => spawn(
+                        "pid" => Process.spawn(
                             config["env"],
                             config["cmd"],
                             {
