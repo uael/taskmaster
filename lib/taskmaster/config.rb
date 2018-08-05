@@ -138,12 +138,12 @@ module Taskmaster
                 abort("Invalid config file: invalid stoptime '#{conf["stoptime"]}' (#{Config::RC_FILE})")
             end
 
-            if not File.writable?(conf["stdout"])
-                abort("Invalid config file: '#{conf["stdout"]}' not found (#{Config::RC_FILE})")
+            if File.exists?(conf["stdout"]) and not File.writable?(conf["stdout"])
+                abort("Invalid config file: '#{conf["stdout"]}' not writable (#{Config::RC_FILE})")
             end
 
-            if not File.writable?(conf["stderr"])
-                abort("Invalid config file: '#{conf["stderr"]}' not found (#{Config::RC_FILE})")
+            if File.exists?(conf["stderr"]) and not File.writable?(conf["stderr"])
+                abort("Invalid config file: '#{conf["stderr"]}' not writable (#{Config::RC_FILE})")
             end
 
             if not conf["env"].is_a?(Hash)
