@@ -45,7 +45,7 @@ module Taskmaster
                             else
                                 if !pid.nil?
                                     if $?.exitstatus.nil?
-                                        p["exitcode"] = $?.termsig
+                                        p["exitcode"] = 128 + $?.termsig
                                     else
                                         p["exitcode"] = $?.exitstatus
                                     end
