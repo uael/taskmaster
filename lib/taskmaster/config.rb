@@ -33,40 +33,6 @@ module Taskmaster
             "exitcode" => nil,
         }
 
-        SIGNALS = {
-            "HUP" => 1,
-            "INT" => 2,
-            "QUIT" => 3,
-            "ILL" => 4,
-            "TRAP" => 5,
-            "ABRT" => 6,
-            "IOT" => 6,
-            "FPE" => 8,
-            "KILL" => 9,
-            "BUS" => 10,
-            "SEGV" => 11,
-            "SYS" => 12,
-            "PIPE" => 13,
-            "ALRM" => 14,
-            "TERM" => 15,
-            "URG" => 16,
-            "STOP" => 17,
-            "TSTP" => 18,
-            "CONT" => 19,
-            "CHLD" => 20,
-            "CLD" => 20,
-            "TTIN" => 21,
-            "TTOU" => 22,
-            "POLL" => 23,
-            "IO" => 23,
-            "XCPU" => 24,
-            "XFSZ" => 25,
-            "VTALRM" => 26,
-            "PROF" => 27,
-            "WINCH" => 28,
-            "USR1" => 30,
-            "USR2" => 31,
-        }
         @@data = {}
 
         def self.getData
@@ -130,10 +96,10 @@ module Taskmaster
                 abort("Invalid config file: invalid startretries '#{conf["startretries"]}' (#{Config::RC_FILE})")
             end
 
-            if not SIGNALS.keys.include?(conf["stopsignal"])
+            if not Signal.list.keys.include?(conf["stopsignal"])
                 abort("Invalid config file: invalid stopsignal '#{conf["stopsignal"]}' (#{Config::RC_FILE})")
             end
-            conf["stopsignal"] = SIGNALS[conf["stopsignal"]]
+            conf["stopsignal"] = Signal.list[conf["stopsignal"]]
 
             if not conf["stoptime"].is_a?(Integer) or conf["stoptime"] < 0
                 abort("Invalid config file: invalid stoptime '#{conf["stoptime"]}' (#{Config::RC_FILE})")

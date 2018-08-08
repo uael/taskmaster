@@ -1,8 +1,9 @@
-require "time"
+require 'pp'                    # DEBUG
 
 require 'taskmaster/version'
 require 'taskmaster/reader'
 require 'taskmaster/config'
+require 'taskmaster/console'
 require 'taskmaster/history'
 require 'taskmaster/register'
 require 'taskmaster/proc'
@@ -23,19 +24,34 @@ module Taskmaster
         # TODO: catch sighup -> reload conf
         #                    -> kill all proc?
         #                    -> restart proc?
+        # Signal.trap("HUP") {
+        #     super_fun
+        # }
+
         Thread.new {
             loop do
                 conf = Config.getData()
                 conf.keys.each { |k|
                     conf[k]["procs"].each { |p|
                         if p["exitcode"].nil?
+                            pid = nil
                             begin
-                                Process.kill(p["pid"], 0)  # is it still alive?
-                            rescue # nop
-                                Process.wait(p["pid"])
-                                p["exitcode"] = $?.exitstatus
-                                p["endtime"] = Time.now
-                                Proc.undertaker(k, p)
+                                pid = Process.wait(p["pid"], Process::WNOHANG)
+                            rescue # alive
+                                if p["killtime"] > 0 and Time.now.to_i - p["killtime"] > conf[k]["stoptime"]
+                                    Console.warn("#{k} was still running after its stoptime delay, killing it now")
+                                    Process.kill(Signal.list["KILL"], p["pid"])
+                                end
+                            else
+                                if !pid.nil?
+                                    if $?.exitstatus.nil?
+                                        p["exitcode"] = $?.termsig
+                                    else
+                                        p["exitcode"] = $?.exitstatus
+                                    end
+                                    p["endtime"] = Time.now.to_i
+                                    Proc.undertaker(k, p)
+                                end
                             end
                         end
                     }

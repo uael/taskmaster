@@ -2,8 +2,6 @@ require "time"
 
 module Taskmaster
     module Proc
-        @@pids = {} # "ls" => {[pid], etc}
-
         def self.which(cmd)
             if File.executable?(cmd)
                 return cmd
@@ -23,38 +21,57 @@ module Taskmaster
             conf = Config::getData()[name]
             (1..conf["numprocs"]).each {
                 begin
-                    conf["procs"].push(
+                    pid = Process.spawn(
+                        conf["env"],
+                        conf["cmd"],
                         {
-                            "begintime" => Time.now,
-                            "endtime" => 0,
-                            "killtime" => 0,
-                            "exitcode" => nil,
-                            "pid" => Process.spawn(
-                                conf["env"],
-                                conf["cmd"],
-                                {
-                                    :out => conf["stdout"],
-                                    :err => conf["stderr"],
-                                    :chdir => conf["workingdir"],
-                                    :umask => conf["umask"],
-                                }
-                            )
+                            :out => conf["stdout"],
+                            :err => conf["stderr"],
+                            :chdir => conf["workingdir"],
+                            :umask => conf["umask"],
                         }
                     )
                 rescue Exception => e
                     Console.error(e.message)
+                else
+                    conf["procs"].push(
+                        {
+                            "begintime" => Time.now.to_i,
+                            "endtime" => 0,
+                            "killtime" => 0,
+                            "exitcode" => nil,
+                            "pid" => pid
+                        }
+                    )
                 end
             }
         end
 
-        def self.kill(name, force=false)
-            # conf = Config::getData()[name]
-            # TODO: check if the proc is actually running
+        def self.kill(name)
+            conf = Config::getData()[name]
 
-            # TODO: time_of_death = time.now
-            # TODO: send conf["stopsignal"] to the proc
-            puts "#{name}: aaaarg"
-            # TODO: in wait callback? -> SIGKILL if time.now - time_of_death > conf["stoptime"]
+            conf["procs"].each { |p|
+                if !Proc.is_alive(p)
+                    puts "#{name}: not running"
+                else
+                    p["killtime"] = Time.now.to_i
+                    Process.kill(conf["stopsignal"], p["pid"])
+                    puts "#{name}: aaaarg"
+                end
+            }
+        end
+
+        # def self.is_alive(proc)
+        #     begin
+        #         Process.kill(0, proc["pid"])
+        #     rescue Errno::ESRCH
+        #         return false
+        #     end
+        #     return true
+        # end
+
+        def self.is_alive(proc)
+            return proc["exitcode"].nil?
         end
 
         def self.status(name)
