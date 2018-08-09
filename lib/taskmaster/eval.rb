@@ -45,8 +45,8 @@ module Taskmaster
             end
 
             args.each { |arg|
+                Eval::stop([arg])  # TODO: wait death,
                 Eval::start([arg])
-                Eval::stop([arg])
             }
         end
 
