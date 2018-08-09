@@ -1,3 +1,5 @@
+require "taskmaster/register"
+
 class String
     CLEAR = "\e[0m".freeze
     BOLD = "\e[1m".freeze
@@ -24,8 +26,19 @@ module Taskmaster
     module Console
         PREFIX = "taskmaster: ".freeze
 
-        def self.error(msg)  puts("#{PREFIX.red}#{msg}"); end
-        def self.warn(msg)   puts("#{PREFIX.yellow}#{msg}"); end
-        def self.notice(msg) puts("#{PREFIX.cyan}#{msg}"); end
+        def self.error(msg)
+            puts("#{PREFIX.red}#{msg}")
+            Register::log("[Error] #{msg}")
+        end
+
+        def self.warn(msg)
+            puts("#{PREFIX.yellow}#{msg}")
+            Register::log("[Warning] #{msg}")
+        end
+
+        def self.notice(msg)
+            puts("#{PREFIX.cyan}#{msg}")
+            Register::log("[Notice] #{msg}")
+        end
     end
 end
