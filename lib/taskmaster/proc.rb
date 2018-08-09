@@ -14,7 +14,6 @@ module Taskmaster
             nil
         end
 
-        # TODO: loop the whole function config["startretries"] times till it succeeds
         def self.launch(name)
             conf = Config::getData()[name]
             (1..conf["numprocs"]).each {
@@ -36,6 +35,7 @@ module Taskmaster
                 rescue Exception => e
                     Console.error(e.message)
                 else
+                    Console.notice("Launching #{name}: here we go!")
                     conf["procs"].push(
                         {
                             "begintime" => Time.now.to_i,
@@ -54,11 +54,11 @@ module Taskmaster
 
             conf["procs"].each { |p|
                 if !p["exitcode"].nil?
-                    puts "#{name}: not running"
+                    Console.warn("Can't kill #{name}: not running")
                 else
                     p["killtime"] = Time.now.to_i
                     Process.kill(conf["stopsignal"], p["pid"])
-                    puts "#{name}: aaaarg"
+                    Console.notice("Killin #{name}: aaaaaaaaaaarg")
                 end
             }
         end
@@ -67,9 +67,9 @@ module Taskmaster
             conf = Config::getData()[name]
             for i in 1..conf["procs"].length
                 if conf["procs"][i - 1]["exitcode"].nil?
-                    puts "#{name} ##{i}: I'm ok thank you"
+                    Console.notice("#{name} ##{i}: I'm ok thank you")
                 else
-                    puts "dead-#{name} ##{i}: wooooo!"
+                    Console.notice("dead-#{name} ##{i}: wooooo!")
                 end
             end
         end

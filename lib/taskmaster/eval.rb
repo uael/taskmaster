@@ -55,7 +55,7 @@ module Taskmaster
                 return Console.warn("reload: too many arguments")
             end
 
-            Config::load()
+            Config::reload()
         end
 
         def self.quit(args)
@@ -75,7 +75,6 @@ module Taskmaster
                     end
                 }
             }
-
             puts("kthxbye")
             exit
         end

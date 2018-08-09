@@ -21,12 +21,9 @@ module Taskmaster
             end
         }
 
-        # TODO: catch sighup -> reload conf
-        #                    -> kill all proc?
-        #                    -> restart proc?
-        # Signal.trap("HUP") {
-        #     super_fun
-        # }
+        Signal.trap("HUP") {
+            Config.reload()
+        }
 
         Thread.new {
             loop do
