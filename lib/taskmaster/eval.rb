@@ -43,9 +43,31 @@ module Taskmaster
             if args.length == 0
                 return Console.warn("restart: need at least 1 argument")
             end
+            conf = Config.getData()
 
             args.each { |arg|
-                Eval::stop([arg])  # TODO: wait death,
+                Eval::stop([arg])
+
+                startretries = conf[arg]["startretries"]  # TODO: I'm not so sure about that one
+                autorestart = conf[arg]["autorestart"]
+                conf[arg]["startretries"] = 0
+                conf[arg]["autorestart"] = "never"
+
+                all_dead = false
+                while !all_dead
+                    all_dead = true
+                    conf[arg]["procs"].each { |p|
+                        if p["exitcode"].nil?
+                            all_dead = false
+                        end
+                    }
+                    sleep(0.1)
+                end
+
+                conf[arg]["startretries"] = startretries
+                conf[arg]["autorestart"] = autorestart
+                conf[arg]["procs"] = []  # makes sense
+
                 Eval::start([arg])
             }
         end

@@ -89,7 +89,7 @@ module Taskmaster
 
             launch_me = false
             if proc["endtime"] - proc["begintime"] < conf["starttime"]
-                if conf["retries"] == conf["startretries"]
+                if conf["retries"] >= conf["startretries"]
                     Console.warn("#{name} restarted more than the allowed restart retries")
                     conf["retries"] = 0
                 else
