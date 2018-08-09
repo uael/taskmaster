@@ -41,7 +41,7 @@ module Taskmaster
 
         def self.getline
             stty_save = `stty -g`.chomp
-            trap('INT', 'SIG_IGN') #TODO
+            trap('INT', 'SIG_IGN')
 
             Readline.completion_append_character = " "
             Readline.completion_proc = proc { |s|
@@ -60,7 +60,6 @@ module Taskmaster
 
             if Reader::isValidLine(cmd)
                 Register::log(line)
-                # Register::method(Reader::SUPER_CMD[cmd[0]]).call(line)
                 Eval::method(Reader::SUPER_CMD[cmd[0]]).call(cmd[1..-1])
             end
         end

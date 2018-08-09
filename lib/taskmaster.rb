@@ -22,6 +22,7 @@ module Taskmaster
         }
 
         Signal.trap("HUP") {
+            Console.notice("Received SIGHUP, reloading config")
             Config.reload()
         }
 
@@ -47,6 +48,7 @@ module Taskmaster
                                         p["exitcode"] = $?.exitstatus
                                     end
                                     p["endtime"] = Time.now.to_i
+                                    Console.notice("#{k} exited with return code #{p["exitcode"]}")
                                     Proc.undertaker(k, p)
                                 end
                             end

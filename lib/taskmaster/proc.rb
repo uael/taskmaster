@@ -35,7 +35,6 @@ module Taskmaster
                 rescue Exception => e
                     Console.error(e.message)
                 else
-                    Console.notice("Launching #{name}: here we go!")
                     conf["procs"].push(
                         {
                             "begintime" => Time.now.to_i,
@@ -45,6 +44,7 @@ module Taskmaster
                             "pid" => pid
                         }
                     )
+                    Console.notice("Launching #{name} ##{conf["procs"].length}: here we go!")
                 end
             }
         end
