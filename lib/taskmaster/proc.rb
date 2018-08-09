@@ -19,6 +19,10 @@ module Taskmaster
             conf = Config::getData()[name]
             (1..conf["numprocs"]).each {
                 begin
+                    cmd = conf["cmd"].split(/\s+/)[0]
+                    if Proc.which(cmd).nil?
+                        raise("#{cmd}: command not found")
+                    end
                     pid = Process.spawn(
                         conf["env"],
                         conf["cmd"],
