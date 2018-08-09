@@ -61,8 +61,21 @@ module Taskmaster
         def self.quit(args)
             History.save()
             Register::log("quit")
-            # TODO: kill all remaining process (aka: zombie slaughter)
-            # Process.detach(pid)
+
+            conf = Config.getData()
+            conf.keys.each { |k|
+                conf[k]["procs"].each { |p|
+                    if p["exitcode"].nil?
+                        begin
+                            Process.kill(Signal.list["KILL"], p["pid"])
+                            Console.notice("killing remaining process #{k}: #{p['pid']}")
+                        rescue
+                            #haha
+                        end
+                    end
+                }
+            }
+
             puts("kthxbye")
             exit
         end
