@@ -22,7 +22,8 @@ module Taskmaster
             "env" => {},
             "workingdir" => '/tmp',
             "umask" => 0o22,
-            "procs" => []
+            "procs" => [],
+            "retries" => 0
         }
 
         PROC = {

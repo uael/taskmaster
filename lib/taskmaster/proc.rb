@@ -1,5 +1,3 @@
-require "time"
-
 module Taskmaster
     module Proc
         def self.which(cmd)
@@ -51,7 +49,7 @@ module Taskmaster
             conf = Config::getData()[name]
 
             conf["procs"].each { |p|
-                if !Proc.is_alive(p)
+                if !p["exitcode"].nil?
                     puts "#{name}: not running"
                 else
                     p["killtime"] = Time.now.to_i
@@ -59,19 +57,6 @@ module Taskmaster
                     puts "#{name}: aaaarg"
                 end
             }
-        end
-
-        # def self.is_alive(proc)
-        #     begin
-        #         Process.kill(0, proc["pid"])
-        #     rescue Errno::ESRCH
-        #         return false
-        #     end
-        #     return true
-        # end
-
-        def self.is_alive(proc)
-            return proc["exitcode"].nil?
         end
 
         def self.status(name)
@@ -87,12 +72,40 @@ module Taskmaster
         end
 
         def self.undertaker(name, proc)
-            # TODO: check return code -> restart if needed: conf["autorestart"]
             conf = Config::getData()[name]
-            if proc["endtime"] - proc["begintime"] < conf["starttime"]
-                Console.warn("#{name} finished before its configured starttime")
-                # TODO: restart?
+
+            all_dead = true
+            conf["procs"].each { |p|
+                if p["exitcode"].nil?
+                    all_dead = false
+                end
+            }
+            if not all_dead
+                return false
             end
+
+            launch_me = false
+            if proc["endtime"] - proc["begintime"] < conf["starttime"]
+                if conf["retries"] == conf["startretries"]
+                    Console.warn("#{name} restarted more than the allowed restart retries")
+                    conf["retries"] = 0
+                else
+                    launch_me = true
+                    conf["retries"] += 1
+                end
+            end
+
+            if conf["autorestart"] == "always" || \
+               (conf["autorestart"] == "unexpected" && !conf["exitcodes"].include?(proc["exitcode"]))
+                launch_me = true
+            end
+
+            if launch_me
+                conf["procs"] = []
+                Console.notice("#{name}: restarting")
+                Proc.launch(name)
+            end
+
         end
     end
 end
