@@ -67,7 +67,6 @@ module Taskmaster
                 else
                     puts "dead-#{name} ##{i}: wooooo!"
                 end
-                # TODO: add more infos?
             end
         end
 
