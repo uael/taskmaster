@@ -49,7 +49,7 @@ module Taskmaster
             }
 
             begin
-                line = Readline.readline(Reader::SUPER_PROMPT)
+                line = Readline.readline(Reader::SUPER_PROMPT, true)
                 cmd = line.strip.split(/\s+/)
             rescue Interrupt
                 system('stty', stty_save) # Restore
