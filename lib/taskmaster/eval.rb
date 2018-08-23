@@ -9,6 +9,13 @@ require_relative 'proc'
 module Taskmaster
 
     module Eval
+        def self.help(args)
+            puts "available commands:"
+            Reader::SUPER_CMD.keys.each { |k|
+                puts k
+            }
+        end
+
         def self.status(args)
             if args.length == 0
                 args = Config.getData().keys
@@ -91,7 +98,7 @@ module Taskmaster
                     if p["exitcode"].nil?
                         begin
                             Process.kill(Signal.list["KILL"], p["pid"])
-                            Console.notice("killing remaining process #{k}: #{p['pid']}")
+                            Console.log("killing remaining process #{k}: #{p['pid']}")
                         rescue
                             #haha
                         end

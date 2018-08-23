@@ -48,7 +48,7 @@ module Taskmaster
                                         p["exitcode"] = $?.exitstatus
                                     end
                                     p["endtime"] = Time.now.to_i
-                                    Console.notice("#{k} exited with return code #{p["exitcode"]}")
+                                    Console.log("#{k} exited with return code #{p["exitcode"]}")
                                     Proc.undertaker(k, p)
                                 end
                             end

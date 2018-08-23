@@ -28,9 +28,7 @@ module Taskmaster
         DEBUG = !!ENV["DEBUG"]
 
         def self.error(msg)
-            if DEBUG
-                puts("#{PREFIX.red}#{msg}")
-            end
+            puts("#{PREFIX.red}#{msg}")
             Register::log("[Error] #{msg}")
         end
 
@@ -42,10 +40,15 @@ module Taskmaster
         end
 
         def self.notice(msg)
+            puts("#{PREFIX.cyan}#{msg}")
+            Register::log("[Notice] #{msg}")
+        end
+
+        def self.log(msg)
             if DEBUG
                 puts("#{PREFIX.cyan}#{msg}")
             end
-            Register::log("[Notice] #{msg}")
+            Register::log("[Log] #{msg}")
         end
     end
 end

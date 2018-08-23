@@ -13,7 +13,7 @@ module Taskmaster
             "autostart" => true,
             "autorestart" => 'unexpected', # always/never/unexpected
             "exitcodes" => [0],
-            "starttime" => 5,
+            "starttime" => 0,  # < 0 == disabled
             "startretries" => 3,
             "stopsignal" => 'TERM',
             "stoptime" => 10,
@@ -132,9 +132,8 @@ module Taskmaster
                 return false
             end
             conf["env"].keys.each { |k|
-                if not k.is_a?(String) or not conf["env"][k].is_a?(String) or k != k.upcase
-                    Console.error("Invalid config file: invalid env '#{k}=#{conf["env"][k]}' (#{Config::RC_FILE})")
-                    return false
+                if not conf["env"][k].is_a?(String)
+                    conf["env"][k] = conf["env"][k].to_s
                 end
             }
 
@@ -206,7 +205,7 @@ module Taskmaster
                     tmp.each { |p|
                         begin
                             Process.kill(Signal.list["KILL"], p["pid"])
-                            Console.notice("killing #{k}: #{p['pid']} due to reload (not used anymore)")
+                            Console.log("killing #{k}: #{p['pid']} due to reload (not used anymore)")
                         rescue
                             #haha
                         end
@@ -219,7 +218,7 @@ module Taskmaster
                         tmp.each { |p|
                             begin
                                 Process.kill(Signal.list["KILL"], p["pid"])
-                                Console.notice("killing #{k}: #{p['pid']} due to reload (not used anymore)")
+                                Console.log("killing #{k}: #{p['pid']} due to reload (not used anymore)")
                             rescue
                                 #haha
                             end

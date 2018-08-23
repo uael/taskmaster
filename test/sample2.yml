@@ -1,0 +1,55 @@
+programs:
+  echo:
+    cmd: "/bin/echo $ZBOUB"
+    numprocs: 3
+    autostart: true
+    autorestart: unexpected
+    exitcodes:
+    - 0
+    starttime: 5
+    startretries: 3
+    stopsignal: TERM
+    stoptime: 10
+    stdout: "/dev/stdout"
+    stderr: "/dev/stderr"
+    env:
+      ZBOUB: tot
+    workingdir: "/tmp"
+    umask: 18
+
+  ping:
+    cmd: "/sbin/ping $ZBOUB"
+    numprocs: 1
+    autostart: true
+    autorestart: unexpected
+    exitcodes:
+    - 0
+    - 143
+    starttime: 5
+    startretries: 3
+    stopsignal: TERM
+    stoptime: 10
+    stdout: "/tmp/ping.out"
+    stderr: "/tmp/ping.err"
+    env:
+      ZBOUB: "42.fr"
+    workingdir: "/tmp"
+    umask: 18
+
+  lol:
+    cmd: "cat $ZBOUB"
+    numprocs: 1
+    autostart: true
+    autorestart: unexpected
+    exitcodes:
+    - 0
+    starttime: 0
+    startretries: 3
+    stopsignal: TERM
+    stoptime: 10
+    stdout: "/tmp/stdout.lol"
+    stderr: "/tmp/stderr.lol"
+    env:
+      ZBOUB: "/tmp/ping.out"
+    workingdir: "/tmp"
+    umask: 18

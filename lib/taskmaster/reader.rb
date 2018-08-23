@@ -17,6 +17,7 @@ module Taskmaster
             "reload" => :reload,
             "quit" => :quit,
             "exit" => :quit,
+            "help" => :help,
         }
 
         def self.isValidLine(cmd)

@@ -45,7 +45,7 @@ module Taskmaster
                             "pid" => pid
                         }
                     )
-                    Console.notice("Launching #{name} ##{conf["procs"].length}: here we go!")
+                    Console.log("Launching #{name} ##{conf["procs"].length}: here we go!")
                 end
             }
         end
@@ -59,7 +59,7 @@ module Taskmaster
                 else
                     p["killtime"] = Time.now.to_i
                     Process.kill(conf["stopsignal"], p["pid"])
-                    Console.notice("Killin #{name}: aaaaaaaaaaarg")
+                    Console.log("Killin #{name}: aaaaaaaaaaarg")
                 end
             }
         end
@@ -68,9 +68,9 @@ module Taskmaster
             conf = Config::getData()[name]
             for i in 1..conf["procs"].length
                 if conf["procs"][i - 1]["exitcode"].nil?
-                    Console.notice("#{name} ##{i}: I'm ok thank you")
+                    Console.log("#{name} ##{i}: I'm ok thank you")
                 else
-                    Console.notice("dead-#{name} ##{i}: wooooo!")
+                    Console.log("dead-#{name} ##{i}: wooooo!")
                 end
             end
         end
@@ -89,7 +89,7 @@ module Taskmaster
             end
 
             launch_me = false
-            if proc["endtime"] - proc["begintime"] < conf["starttime"]
+            if conf["starttime"] > 0 and proc["endtime"] - proc["begintime"] < conf["starttime"]
                 if conf["retries"] >= conf["startretries"]
                     Console.warn("#{name} restarted more than the allowed restart retries")
                     conf["retries"] = 0
@@ -106,7 +106,7 @@ module Taskmaster
 
             if launch_me
                 conf["procs"] = []
-                Console.notice("#{name}: restarting")
+                Console.log("#{name}: restarting")
                 Proc.launch(name)
             end
 
