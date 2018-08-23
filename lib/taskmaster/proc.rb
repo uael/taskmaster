@@ -30,6 +30,7 @@ module Taskmaster
                             :err => conf["stderr"],
                             :chdir => conf["workingdir"],
                             :umask => conf["umask"],
+                            :pgroup => true
                         }
                     )
                 rescue Exception => e

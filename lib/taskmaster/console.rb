@@ -25,19 +25,26 @@ module Taskmaster
 
     module Console
         PREFIX = "taskmaster: ".freeze
+        DEBUG = !!ENV["DEBUG"]
 
         def self.error(msg)
-            puts("#{PREFIX.red}#{msg}")
+            if DEBUG
+                puts("#{PREFIX.red}#{msg}")
+            end
             Register::log("[Error] #{msg}")
         end
 
         def self.warn(msg)
-            puts("#{PREFIX.yellow}#{msg}")
+            if DEBUG
+                puts("#{PREFIX.yellow}#{msg}")
+            end
             Register::log("[Warning] #{msg}")
         end
 
         def self.notice(msg)
-            puts("#{PREFIX.cyan}#{msg}")
+            if DEBUG
+                puts("#{PREFIX.cyan}#{msg}")
+            end
             Register::log("[Notice] #{msg}")
         end
     end

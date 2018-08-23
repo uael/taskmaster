@@ -48,7 +48,7 @@ module Taskmaster
             args.each { |arg|
                 Eval::stop([arg])
 
-                startretries = conf[arg]["startretries"]  # TODO: I'm not so sure about that one
+                startretries = conf[arg]["startretries"]
                 autorestart = conf[arg]["autorestart"]
                 conf[arg]["startretries"] = 0
                 conf[arg]["autorestart"] = "never"
@@ -66,6 +66,7 @@ module Taskmaster
 
                 conf[arg]["startretries"] = startretries
                 conf[arg]["autorestart"] = autorestart
+                conf[arg]["retries"] = 0
                 conf[arg]["procs"] = []  # makes sense
 
                 Eval::start([arg])
